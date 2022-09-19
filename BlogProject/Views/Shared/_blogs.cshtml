@@ -1,0 +1,15 @@
+﻿
+
+@model Blog
+
+<div class="card mb-2">
+    <img class="card-img-top img-responsive" src="~/img/@Model.BlogImage" alt="">
+    <div class="card-body">
+        <h5 class="card-title">@Model.BlogTitle</h5>
+        <small class="text-muted">@Model.BlogCreateDate.ToString("D")</small>
+    </div>
+    <div class="card-footer text-center">
+        <a asp-controller="Blog" asp-action="Details" asp-route-url="@Model.Url" class="btn btn-outline-success btn-sm">Detail</a>
+    </div>
+</div>   
+
