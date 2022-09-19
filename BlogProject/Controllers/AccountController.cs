@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace BlogProject.Controllers
 {
+    [ValidateAntiForgeryToken]
     public class AccountController : Controller
     {
         private UserManager<User> _userManager;

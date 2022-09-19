@@ -63,7 +63,8 @@ namespace BlogProject
                 options.Cookie = new CookieBuilder
                 {
                     HttpOnly = true,
-                    Name = ".MyBlog.Security.Cookie"
+                    Name = ".MyBlog.Security.Cookie",
+                    SameSite=SameSiteMode.Strict
                 };
             });
 
