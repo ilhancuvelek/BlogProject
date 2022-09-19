@@ -1,3 +1,4 @@
+using BlogProject.EmailServices;
 using Business.Abstract;
 using Business.Concrete;
 using DataAccess.Abstract;
@@ -21,9 +22,10 @@ namespace BlogProject
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private IConfiguration _configuration;
+        public Startup(IConfiguration configuration) //app settingdeki email bilgileri için
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
@@ -50,7 +52,7 @@ namespace BlogProject
 
                 // options.User.AllowedUserNameCharacters = "";
                 options.User.RequireUniqueEmail = true;
-                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedEmail = true;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
             });
 
@@ -73,6 +75,16 @@ namespace BlogProject
             services.AddScoped<ICategoryRepository, EfCoreCategoryRepository>();
             services.AddScoped<ICategoryService, CategoryManager>();
             services.AddScoped<IBlogService, BlogManager>();
+
+            //email onay için
+            services.AddScoped<IEmailSender, SmtpEmailSender>(i =>
+                new SmtpEmailSender(
+                    _configuration["EmailSender:Host"],
+                    _configuration.GetValue<int>("EmailSender:Port"),
+                    _configuration.GetValue<bool>("EmailSender:EnableSSL"),
+                    _configuration["EmailSender:UserName"],
+                    _configuration["EmailSender:Password"])
+                );
             services.AddRazorPages();
         }
 

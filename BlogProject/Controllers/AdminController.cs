@@ -257,7 +257,7 @@ namespace BlogProject.Controllers
         }
 
 
-        private void CreateMessage(string message, string alerttype)
+        public void CreateMessage(string message, string alerttype)
         {
             var msg = new AlertMessage
             {

@@ -1,20 +1,25 @@
-﻿using BlogProject.Models;
+﻿using BlogProject.EmailServices;
+using BlogProject.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using ShopApp.Identity;
 using System.Threading.Tasks;
 
 namespace BlogProject.Controllers
 {
-    [ValidateAntiForgeryToken]
+    [AutoValidateAntiforgeryToken]
     public class AccountController : Controller
     {
         private UserManager<User> _userManager;
         private SignInManager<User> _signInManager;
-        public AccountController(UserManager<User> userManager,SignInManager<User> signInManager)
+        private IEmailSender _emailSender;
+
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IEmailSender emailSender)
         {
-            _userManager=userManager;
-            _signInManager=signInManager;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _emailSender = emailSender;
         }
 
         [HttpGet]
@@ -34,6 +39,12 @@ namespace BlogProject.Controllers
             {
                 ModelState.AddModelError("", "Bu email ile daha önce hesap açılmamış.");
                 return View(loginModel);
+            }
+            if (!await _userManager.IsEmailConfirmedAsync(user))
+            {
+                ModelState.AddModelError("", "Lütfen email hasabınıza gelen link ile hesabınızı onaylayın.");
+                return View(loginModel);
+
             }
             var result = await _signInManager.PasswordSignInAsync(user, loginModel.Password, true, false);
             if (result.Succeeded)
@@ -65,6 +76,15 @@ namespace BlogProject.Controllers
             var result = await _userManager.CreateAsync(user, registerModel.Password);
             if (result.Succeeded)
             {
+                //generate code
+                var code=await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var url = Url.Action("ConfirmEmail", "Account", new
+                {
+                    userId=user.Id,
+                    token=code
+                });
+                //email
+                await _emailSender.SendEmailAsync(registerModel.Email, "Hesabınızı onaylayınız.", $"Lütfen email hesabınızı onaylamak için linke <a href='https://localhost:5001{url}'>tıklayınız.</a>");
                 return RedirectToAction("Login", "Account");
             }
             ModelState.AddModelError("", "Bilinmeyen bir hata oluştu.Lütfen tekrar deneyiniz.");
@@ -74,6 +94,37 @@ namespace BlogProject.Controllers
         {
             await _signInManager.SignOutAsync();
             return Redirect("~/");
+        }
+
+        public async Task<IActionResult> ConfirmEmail(string userId,string token)
+        {
+            if (userId == null || token == null)
+            {
+                CreateMessage("Geçersiz token", "danger");
+                return View();
+            }
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                var result = await _userManager.ConfirmEmailAsync(user, token);
+                if (result.Succeeded)
+                {
+                    CreateMessage("Hesabınız Onaylandı", "success");
+                    return View();
+                }
+            }
+            CreateMessage("Hesabınız Onaylanmadı", "warning");
+            return View();
+        }
+
+        public void CreateMessage(string message, string alerttype)
+        {
+            var msg = new AlertMessage
+            {
+                Message = message,
+                AlertType = alerttype
+            };
+            TempData["message"] = JsonConvert.SerializeObject(msg);
         }
     }
 }
