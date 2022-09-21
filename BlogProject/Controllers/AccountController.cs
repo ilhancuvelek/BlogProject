@@ -117,6 +117,62 @@ namespace BlogProject.Controllers
             return View();
         }
 
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(string Email)
+        {
+            if (string.IsNullOrEmpty(Email))
+            {
+                return View(); 
+            }
+            var user = await _userManager.FindByEmailAsync(Email);
+            if (user==null)
+            {
+                return View();
+            }
+            //generate code
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var url = Url.Action("ResetPassword", "Account", new
+            {
+                token=code,
+                userId=user.Id
+            });
+            //email
+            await _emailSender.SendEmailAsync(Email, "Reset Password", $"Parolanızı Yenilemek için linke <a href='https://localhost:5001{url}'>tıklayınız.</a>");
+            return View();
+        }
+        public IActionResult ResetPassword(string userId, string token)
+        {
+            if (userId==null||token==null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            var model = new ResetPasswordModel() { Token = token };
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordModel resetPasswordModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(resetPasswordModel);
+            }
+            var user = await _userManager.FindByEmailAsync(resetPasswordModel.Email);
+            if (user==null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            var result = await _userManager.ResetPasswordAsync(user, resetPasswordModel.Token, resetPasswordModel.Password);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            return View(resetPasswordModel);
+        }
+
         public void CreateMessage(string message, string alerttype)
         {
             var msg = new AlertMessage
