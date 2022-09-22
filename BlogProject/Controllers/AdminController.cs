@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
+using BlogProject.Extensions;
 
 namespace BlogProject.Controllers
 {
@@ -61,11 +62,21 @@ namespace BlogProject.Controllers
                 };
                 if (_blogService.Create(entity))
                 {
-                    CreateMessage("blog eklendi", "success");
+                    TempData.Put("message", new AlertMessage()
+                    {
+                        Title = "blog eklendi",
+                        Message = "blog eklendi.",
+                        AlertType = "success"
+                    });
                     return RedirectToAction("BlogList");
                     
                 }
-                CreateMessage(_blogService.ErrorMessage, "danger");
+                TempData.Put("message", new AlertMessage()
+                {
+                    Title = "Hata",
+                    Message = _blogService.ErrorMessage,
+                    AlertType = "danger"
+                });
                 return View(blogModel);
             }
             
@@ -137,8 +148,12 @@ namespace BlogProject.Controllers
                 }
 
                 _blogService.Update(entity);
-
-                CreateMessage("blog güncellendi", "success");
+                TempData.Put("message", new AlertMessage()
+                {
+                    Title = "blog güncellendi",
+                    Message = "blog güncellendi",
+                    AlertType = "success"
+                });
                 return RedirectToAction("BlogList");
             }
             List<SelectListItem> categoryValues = (from x in categoryManager.GetAll() select new SelectListItem { Text = x.CategoryName, Value = x.CategoryId.ToString() }).ToList();
@@ -153,8 +168,12 @@ namespace BlogProject.Controllers
             {
                 _blogService.Delete(blog);
             }
-
-            CreateMessage("blog silindi", "success");
+            TempData.Put("message", new AlertMessage()
+            {
+                Title = "blog silindi",
+                Message = "blog silindi",
+                AlertType = "danger"
+            });
 
             return RedirectToAction("BlogList");
         }
@@ -188,7 +207,12 @@ namespace BlogProject.Controllers
 
                 };
                 _categoryService.Create(entity);
-                CreateMessage("kategori eklendi", "success");
+                TempData.Put("message", new AlertMessage()
+                {
+                    Title = "kategori eklendi",
+                    Message = "kategori eklendi",
+                    AlertType = "success"
+                });
                 return RedirectToAction("CategoryList");
             }
             return View(categoryModel);
@@ -235,8 +259,12 @@ namespace BlogProject.Controllers
                 entity.Url = categoryModel.Url;
 
                 _categoryService.Update(entity);
-
-                CreateMessage("kategori güncellendi", "success");
+                TempData.Put("message", new AlertMessage()
+                {
+                    Title = "kategori güncellendi",
+                    Message = "kategori güncellendi",
+                    AlertType = "success"
+                });
 
                 return RedirectToAction("CategoryList");
             }
@@ -250,21 +278,14 @@ namespace BlogProject.Controllers
             {
                 _categoryService.Delete(category);
             }
-
-            CreateMessage("kategori silindi", "success");
-
+            TempData.Put("message", new AlertMessage()
+            {
+                Title = "kategori silindi",
+                Message = "kategori silindi",
+                AlertType = "danger"
+            });
             return RedirectToAction("CategoryList");
         }
-
-
-        public void CreateMessage(string message, string alerttype)
-        {
-            var msg = new AlertMessage
-            {
-                Message = message,
-                AlertType = alerttype
-            };
-            TempData["message"] = JsonConvert.SerializeObject(msg);
-        }
+        
     }
 }

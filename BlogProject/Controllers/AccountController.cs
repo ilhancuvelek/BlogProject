@@ -1,4 +1,5 @@
 ﻿using BlogProject.EmailServices;
+using BlogProject.Extensions;
 using BlogProject.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -100,7 +101,12 @@ namespace BlogProject.Controllers
         {
             if (userId == null || token == null)
             {
-                CreateMessage("Geçersiz token", "danger");
+                TempData.Put("message", new AlertMessage()
+                {
+                    Title = "Geçersiz token",
+                    Message = "Geçersiz token.",
+                    AlertType = "danger"
+                });
                 return View();
             }
             var user = await _userManager.FindByIdAsync(userId);
@@ -109,11 +115,21 @@ namespace BlogProject.Controllers
                 var result = await _userManager.ConfirmEmailAsync(user, token);
                 if (result.Succeeded)
                 {
-                    CreateMessage("Hesabınız Onaylandı", "success");
+                    TempData.Put("message", new AlertMessage()
+                    {
+                        Title= "Hesabınız Onaylandı",
+                        Message= "Hesabınız Onaylandı.",
+                        AlertType= "success"
+                    });
                     return View();
                 }
             }
-            CreateMessage("Hesabınız Onaylanmadı", "warning");
+            TempData.Put("message", new AlertMessage()
+            {
+                Title = "Hesabınız Onaylanmadı",
+                Message = "Hesabınız Onaylanmadı.",
+                AlertType = "warning"
+            });
             return View();
         }
 
@@ -173,14 +189,6 @@ namespace BlogProject.Controllers
             return View(resetPasswordModel);
         }
 
-        public void CreateMessage(string message, string alerttype)
-        {
-            var msg = new AlertMessage
-            {
-                Message = message,
-                AlertType = alerttype
-            };
-            TempData["message"] = JsonConvert.SerializeObject(msg);
-        }
+       
     }
 }
