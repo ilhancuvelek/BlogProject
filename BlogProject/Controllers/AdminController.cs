@@ -15,6 +15,8 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using BlogProject.Extensions;
+using Microsoft.AspNetCore.Identity;
+using ShopApp.Identity;
 
 namespace BlogProject.Controllers
 {
@@ -24,12 +26,38 @@ namespace BlogProject.Controllers
         private IBlogService _blogService;
         private ICategoryService _categoryService;
         CategoryManager categoryManager = new CategoryManager(new EfCoreCategoryRepository());
-        public AdminController(IBlogService blogService, ICategoryService categoryService)
+
+        private RoleManager<IdentityRole> _roleManager;
+        private UserManager<User> _userManager;
+        public AdminController(IBlogService blogService, ICategoryService categoryService, RoleManager<IdentityRole> roleManager,UserManager<User> userManager)
         {
             _blogService = blogService;
             _categoryService = categoryService;
+            _roleManager = roleManager;
+            _userManager = userManager;
         }
-
+        //roles
+        public IActionResult RoleList()
+        {
+            return View(_roleManager.Roles);
+        }
+        public IActionResult CreateRole()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateRole(RoleModel roleModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _roleManager.CreateAsync(new IdentityRole(roleModel.Name));
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("RoleList", "Admin");
+                }
+            }
+            return View(roleModel);
+        }
         //blog
         public IActionResult BlogList()
         {
