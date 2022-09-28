@@ -135,6 +135,11 @@ namespace BlogProject
                     defaults: new { controller = "Admin", action = "CreateRole" }
                 );
                 endpoints.MapControllerRoute(
+                     name: "adminroleedit",
+                     pattern: "admin/role/{id?}",
+                     defaults: new { controller = "Admin", action = "RoleEdit" }
+                 );
+                endpoints.MapControllerRoute(
                     name: "adminbloglist",
                     pattern: "admin/blogs",
                     defaults: new { controller = "Admin", action = "BlogList" }
