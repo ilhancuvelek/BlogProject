@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using ShopApp.Identity;
+using BlogProject.Identity;
 using System.Collections.Generic;
 
 namespace BlogProject.Models

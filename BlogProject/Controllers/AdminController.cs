@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using BlogProject.Extensions;
 using Microsoft.AspNetCore.Identity;
-using ShopApp.Identity;
+using BlogProject.Identity;
 
 namespace BlogProject.Controllers
 {
@@ -35,6 +35,11 @@ namespace BlogProject.Controllers
             _categoryService = categoryService;
             _roleManager = roleManager;
             _userManager = userManager;
+        }
+
+        public IActionResult UserList()
+        {
+            return View(_userManager.Users);
         }
         //roles
         public IActionResult RoleList()

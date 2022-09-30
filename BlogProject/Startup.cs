@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ShopApp.Identity;
+using BlogProject.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -123,6 +123,21 @@ namespace BlogProject
                     name: "about",
                     pattern: "about",
                     defaults: new { controller = "Home", action = "About" }
+                );
+                endpoints.MapControllerRoute(
+                    name: "adminuserlist",
+                    pattern: "admin/user/list",
+                    defaults: new { controller = "Admin", action = "UserList" }
+                );
+                endpoints.MapControllerRoute(
+                    name: "adminusercreate",
+                    pattern: "admin/user/create",
+                    defaults: new { controller = "Admin", action = "UserCreate" }
+                );
+                endpoints.MapControllerRoute(
+                   name: "adminusertedit",
+                   pattern: "admin/user/{id?}",
+                   defaults: new { controller = "Admin", action = "UserEdit" }
                 );
                 endpoints.MapControllerRoute(
                     name: "adminrolelist",

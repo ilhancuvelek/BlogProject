@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace ShopApp.Identity
+namespace BlogProject.Identity
 {
     public class User:IdentityUser
     {

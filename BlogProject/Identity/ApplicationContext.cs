@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace ShopApp.Identity
+namespace BlogProject.Identity
 {
     public class ApplicationContext:IdentityDbContext<User>
     {

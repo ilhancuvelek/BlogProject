@@ -13,13 +13,19 @@
             <li class="nav-item">
                 <a asp-controller="Home" asp-action="Contact" class="nav-link">Contact</a>
             </li>
-            @if (User.Identity.IsAuthenticated)
+            @if (User.Identity.IsAuthenticated )
             {
                 <li class="nav-item">
                     <a asp-controller="admin" asp-action="bloglist" class="nav-link">Admin Blogs</a>
                 </li>
                 <li class="nav-item">
                     <a asp-controller="admin" asp-action="categorylist" class="nav-link">Admin Categories</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/role/list" class="nav-link">Roles</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/user/list" class="nav-link">Users</a>
                 </li>
             }
         </ul>

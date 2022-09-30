@@ -4,7 +4,7 @@ using BlogProject.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using ShopApp.Identity;
+using BlogProject.Identity;
 using System.Threading.Tasks;
 
 namespace BlogProject.Controllers
@@ -189,6 +189,11 @@ namespace BlogProject.Controllers
             return View(resetPasswordModel);
         }
 
-       
+
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
     }
 }
